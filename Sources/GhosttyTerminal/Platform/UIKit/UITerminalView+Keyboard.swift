@@ -668,7 +668,7 @@
         /// Starts repeating the key `press` just sent, when
         /// `TerminalKeyRepeat` says it repeats.
         func startKeyRepeat(for press: UIPress) {
-            guard let key = press.key else { return }
+            guard let key = press.key, keyRepeatOverride?.isEnabled ?? true else { return }
             let modifierFlags = filteredModifierFlags(for: key)
             #if targetEnvironment(macCatalyst)
                 let isRepeatedBySystem = TerminalKeyRepeat.typesText(
@@ -685,7 +685,7 @@
             ) else { return }
 
             stopKeyRepeat()
-            let timing = keyRepeatTiming
+            let timing = keyRepeatOverride.map { (initialDelay: $0.initialDelay, interval: $0.interval) } ?? keyRepeatTiming
             let timer = Timer(
                 fire: Date(timeIntervalSinceNow: timing.initialDelay),
                 interval: timing.interval,

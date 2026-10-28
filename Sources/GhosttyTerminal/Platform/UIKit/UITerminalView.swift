@@ -33,6 +33,12 @@
             var fontZoom: FontZoomState = .init()
         #endif
 
+        /// Overrides how held hardware keys repeat. Nil keeps the platform's
+        /// pace: the user's Key Repeat setting on Mac Catalyst, AppKit's
+        /// defaults on iOS, which exposes no setting. A change applies from
+        /// the next key press.
+        open var keyRepeatOverride: TerminalKeyRepeatTiming?
+
         lazy var selectionContextMenuInteraction = UIContextMenuInteraction(delegate: self)
         lazy var inputHandler = TerminalTextInputHandler(view: self)
 

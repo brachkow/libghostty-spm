@@ -1,5 +1,23 @@
 import Foundation
 
+/// A key repeat pace an app sets in place of the platform's, for the held
+/// keys the view repeats itself (every key on iOS; on Mac Catalyst, the
+/// keys the system does not already repeat).
+public struct TerminalKeyRepeatTiming: Equatable, Sendable {
+    /// Whether held keys repeat at all.
+    public var isEnabled: Bool
+    /// Seconds from the press to the first repeat.
+    public var initialDelay: TimeInterval
+    /// Seconds between repeats.
+    public var interval: TimeInterval
+
+    public init(isEnabled: Bool = true, initialDelay: TimeInterval, interval: TimeInterval) {
+        self.isEnabled = isEnabled
+        self.initialDelay = initialDelay
+        self.interval = interval
+    }
+}
+
 /// Which held hardware keys the view repeats itself, and how fast. UIKit
 /// reports a held key once; the repeat belongs to the text input system.
 /// On iOS the terminal's keys never reach it. On Mac Catalyst it repeats
