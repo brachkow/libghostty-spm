@@ -17,6 +17,13 @@
             surface?.selectionRegion()
         }
 
+        /// Whether the inline touch selection is up. A host that adds its own
+        /// one-finger gestures holds them back meanwhile, since a one-finger
+        /// drag then extends the selection.
+        var hasTouchSelection: Bool {
+            touchSelection.range != nil
+        }
+
         /// The viewport cell under `point`, in this view's coordinates.
         func viewportCell(at point: CGPoint) -> TerminalViewportCell? {
             surface?.viewportCell(at: point, scale: resolvedDisplayScale())

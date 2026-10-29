@@ -221,14 +221,36 @@
                 return CGPoint(x: cursor.x, y: cursor.y - cursor.height / 2)
             }
 
-            /// Long press opens the touch menu; with inline selection off
-            /// the recognizer never begins (see `gestureRecognizerShouldBegin`).
+            /// Long press selects the word under the finger and opens the
+            /// selection menu, as text does elsewhere on iOS; moving the
+            /// finger before lifting it extends the selection from that word.
+            /// With inline selection off the recognizer never begins (see
+            /// `gestureRecognizerShouldBegin`).
             @objc func handleLongPressForSelection(
                 _ gesture: UILongPressGestureRecognizer,
             ) {
-                guard gesture.state == .began, usesInlineTextSelection else { return }
-                softwareKeyboard.tapCandidateArmed = false
-                presentTouchMenu(at: gesture.location(in: self))
+                guard usesInlineTextSelection else { return }
+                let point = gesture.location(in: self)
+                switch gesture.state {
+                case .began:
+                    softwareKeyboard.tapCandidateArmed = false
+                    beginTouchSelection(at: point, selectAll: false)
+                    if touchSelection.range == nil {
+                        presentTouchMenu(at: point)
+                    }
+                case .changed:
+                    guard touchSelection.range != nil else { return }
+                    if #available(iOS 16.0, *) {
+                        selectionEditMenuInteraction.dismissMenu()
+                    }
+                    touchSelection.dragPoint = point
+                    extendTouchSelection(to: point, endpoint: .end)
+                case .ended, .cancelled:
+                    guard touchSelection.range != nil, touchSelection.dragPoint != nil else { return }
+                    finishTouchSelectionDrag(at: point)
+                default:
+                    break
+                }
             }
         #endif
 
